@@ -563,6 +563,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             sap_wit.coefficients_for_H.begin(),
             sap_wit.coefficients_for_H.end(),
             std::min((size_t)(pk.G_gamma2_Z_t.end() - pk.G_gamma2_Z_t.begin()), chunks));
+    printf("%d %d %d\n", (int)(pk.C_query_1.end() - pk.C_query_1.begin()), (int)(pk.C_query_2.end() - (pk.C_query_2.begin() + 1)), (int)(pk.G_gamma2_Z_t.end() - pk.G_gamma2_Z_t.begin()));
     libff::leave_block("Compute answer to C-query", false);
     printf("END Compute answer to C-query\n");
     libff::leave_block("Compute the proof");
