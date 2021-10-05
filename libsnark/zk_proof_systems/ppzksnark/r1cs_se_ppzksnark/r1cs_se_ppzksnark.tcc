@@ -440,7 +440,7 @@ r1cs_se_ppzksnark_keypair<ppT> r1cs_se_ppzksnark_generator(const r1cs_se_ppzksna
     
 
     
-template<typename T, typename FieldT, multi_exp_method Method>
+template<typename T, typename FieldT, libff::multi_exp_method Method>
 T multi_exp_warpper(typename std::vector<T>::const_iterator vec_start,
             typename std::vector<T>::const_iterator vec_end,
             typename std::vector<FieldT>::const_iterator scalar_start,
