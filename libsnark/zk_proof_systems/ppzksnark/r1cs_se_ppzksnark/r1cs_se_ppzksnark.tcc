@@ -442,6 +442,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
                                                 const r1cs_se_ppzksnark_primary_input<ppT> &primary_input,
                                                 const r1cs_se_ppzksnark_auxiliary_input<ppT> &auxiliary_input)
 {
+    printf("Call to r1cs_se_ppzksnark_prover\n");
     libff::enter_block("Call to r1cs_se_ppzksnark_prover");
 
 #ifdef DEBUG
@@ -451,6 +452,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
     const libff::Fr<ppT> d1 = libff::Fr<ppT>::random_element(),
         d2 = libff::Fr<ppT>::random_element();
 
+    printf("Compute the polynomial H\n");
     libff::enter_block("Compute the polynomial H");
     const sap_witness<libff::Fr<ppT> > sap_wit = r1cs_to_sap_witness_map(
         pk.constraint_system, primary_input, auxiliary_input, d1, d2);
