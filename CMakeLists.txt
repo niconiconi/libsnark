@@ -23,7 +23,7 @@ option(
 option(
   MULTICORE
   "Enable parallelized execution, using OpenMP"
-  OFF
+  ON
 )
 option(
   BINARY_OUTPUT
@@ -38,7 +38,7 @@ option(
 option(
   USE_PT_COMPRESSION
   "Use point compression"
-  ON
+  OFF
 )
 option(
   PROFILE_OP_COUNTS
@@ -54,13 +54,13 @@ option(
 option(
   WITH_SUPERCOP
   "Support for Ed25519 signatures required by ADSNARK"
-  ON
+  OFF
 )
 
 option(
   WITH_PROCPS
   "Use procps for memory profiling"
-  ON
+  OFF
 )
 
 option(
@@ -176,9 +176,7 @@ if("${LOWMEM}")
   add_definitions(-DLOWMEM=1)
 endif()
 
-if("${MULTICORE}")
-  add_definitions(-DMULTICORE=1)
-endif()
+add_definitions(-DMULTICORE=1)
 
 if("${BINARY_OUTPUT}")
   add_definitions(-DBINARY_OUTPUT)
