@@ -19,6 +19,7 @@ See r1cs_se_ppzksnark.hpp .
 #include <functional>
 #include <iostream>
 #include <sstream>
+#include <cassert>
 #define MULTICORE
 
 #include <libff/algebra/scalar_multiplication/multiexp.hpp>
@@ -437,6 +438,8 @@ r1cs_se_ppzksnark_keypair<ppT> r1cs_se_ppzksnark_generator(const r1cs_se_ppzksna
     return r1cs_se_ppzksnark_keypair<ppT>(std::move(pk), std::move(vk));
 }
     
+
+    
 template<typename T, typename FieldT, multi_exp_method Method>
 T multi_exp_warpper(typename std::vector<T>::const_iterator vec_start,
             typename std::vector<T>::const_iterator vec_end,
@@ -445,12 +448,17 @@ T multi_exp_warpper(typename std::vector<T>::const_iterator vec_start,
             const size_t chunks)
 {
     const size_t total = vec_end - vec_start;
+    
+    printf("total vs chunks: %d %d\n", (int)total, chunks);
     if ((total < chunks) || (chunks == 1))
     {
+        assert(false);
         // no need to split into "chunks", can call implementation directly
         return libff::multi_exp_inner<T, FieldT, Method>(
             vec_start, vec_end, scalar_start, scalar_end);
     }
+    
+    
 
     const size_t one = total/chunks;
 
