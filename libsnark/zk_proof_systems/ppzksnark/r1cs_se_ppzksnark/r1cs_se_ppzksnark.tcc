@@ -540,7 +540,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             pk.C_query_1.end(),
             sap_wit.coefficients_for_ACs.begin() + sap_wit.num_inputs(),
             sap_wit.coefficients_for_ACs.end(),
-            std::min(pk.C_query_1.end() - pk.C_query_1.begin(), chunks)) +
+            std::min((size_t)(pk.C_query_1.end() - pk.C_query_1.begin()), chunks)) +
         (r * r) * pk.G_gamma2_Z2 +
         r * pk.G_ab_gamma_Z +
         sap_wit.d1 * pk.G_ab_gamma_Z + // ZK-patch
@@ -553,7 +553,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             pk.C_query_2.end(),
             sap_wit.coefficients_for_ACs.begin(),
             sap_wit.coefficients_for_ACs.end(),
-            std::min(pk.C_query_2.end() - (pk.C_query_2.begin() + 1), chunks)) +
+            std::min((size_t)(pk.C_query_2.end() - (pk.C_query_2.begin() + 1)), chunks)) +
         sap_wit.d2 * pk.G_gamma2_Z_t[0] + // ZK-patch
         libff::multi_exp<libff::G1<ppT>,
                           libff::Fr<ppT>,
@@ -562,7 +562,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             pk.G_gamma2_Z_t.end(),
             sap_wit.coefficients_for_H.begin(),
             sap_wit.coefficients_for_H.end(),
-            std::min(pk.G_gamma2_Z_t.end() - pk.G_gamma2_Z_t.begin(), chunks));
+            std::min((size_t)(pk.G_gamma2_Z_t.end() - pk.G_gamma2_Z_t.begin()), chunks));
     libff::leave_block("Compute answer to C-query", false);
     printf("END Compute answer to C-query\n");
     libff::leave_block("Compute the proof");
