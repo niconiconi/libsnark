@@ -480,9 +480,9 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
     printf("Parallel Parameter: Chunks %d\n", (int)chunks);
 
     const libff::Fr<ppT> r = libff::Fr<ppT>::random_element();
-
+    printf("START Compute the proof\n");
     libff::enter_block("Compute the proof");
-
+    printf("START Compute answer to A-query\n");
     libff::enter_block("Compute answer to A-query", false);
     /**
      * compute A = G^{gamma * (\sum_{i=0}^m input_i * A_i(t) + r * Z(t))}
@@ -501,9 +501,9 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             sap_wit.coefficients_for_ACs.begin(),
             sap_wit.coefficients_for_ACs.end(),
             chunks);
-
+    printf("END Compute answer to A-query\n");
     libff::leave_block("Compute answer to A-query", false);
-
+    printf("START Compute answer to B-query\n");
     libff::enter_block("Compute answer to B-query", false);
     /**
      * compute B exactly as A, except with H as the base
@@ -519,8 +519,9 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             sap_wit.coefficients_for_ACs.begin(),
             sap_wit.coefficients_for_ACs.end(),
             chunks);
+    printf("END Compute answer to B-query\n");
     libff::leave_block("Compute answer to B-query", false);
-
+    printf("START Compute answer to C-query\n");
     libff::enter_block("Compute answer to C-query", false);
     /**
      * compute C = G^{f(input) +
@@ -563,8 +564,9 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             sap_wit.coefficients_for_H.end(),
             chunks);
     libff::leave_block("Compute answer to C-query", false);
-
+    printf("END Compute answer to C-query\n");
     libff::leave_block("Compute the proof");
+    printf("END Compute the proof\n");
 
     libff::leave_block("Call to r1cs_se_ppzksnark_prover");
 
