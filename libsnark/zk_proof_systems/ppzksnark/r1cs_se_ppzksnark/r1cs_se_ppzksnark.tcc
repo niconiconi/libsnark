@@ -19,6 +19,7 @@ See r1cs_se_ppzksnark.hpp .
 #include <functional>
 #include <iostream>
 #include <sstream>
+#define MULTICORE
 
 #include <libff/algebra/scalar_multiplication/multiexp.hpp>
 #include <libff/common/profiling.hpp>
@@ -474,6 +475,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
 #else
     const size_t chunks = 1;
 #endif
+    printf("Parallel Parameter: Chunks %d\n", (int)chunks);
 
     const libff::Fr<ppT> r = libff::Fr<ppT>::random_element();
 
