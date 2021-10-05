@@ -436,6 +436,48 @@ r1cs_se_ppzksnark_keypair<ppT> r1cs_se_ppzksnark_generator(const r1cs_se_ppzksna
 
     return r1cs_se_ppzksnark_keypair<ppT>(std::move(pk), std::move(vk));
 }
+    
+template<typename T, typename FieldT, multi_exp_method Method>
+T multi_exp_warpper(typename std::vector<T>::const_iterator vec_start,
+            typename std::vector<T>::const_iterator vec_end,
+            typename std::vector<FieldT>::const_iterator scalar_start,
+            typename std::vector<FieldT>::const_iterator scalar_end,
+            const size_t chunks)
+{
+    const size_t total = vec_end - vec_start;
+    if ((total < chunks) || (chunks == 1))
+    {
+        // no need to split into "chunks", can call implementation directly
+        return libff::multi_exp_inner<T, FieldT, Method>(
+            vec_start, vec_end, scalar_start, scalar_end);
+    }
+
+    const size_t one = total/chunks;
+
+    std::vector<T> partial(chunks, T::zero());
+
+#ifdef MULTICORE
+#pragma omp parallel for
+#endif
+    for (size_t i = 0; i < chunks; ++i)
+    {
+        partial[i] = libff::multi_exp_inner<T, FieldT, Method>(
+             vec_start + i*one,
+             (i == chunks-1 ? vec_end : vec_start + (i+1)*one),
+             scalar_start + i*one,
+             (i == chunks-1 ? scalar_end : scalar_start + (i+1)*one));
+    }
+
+    T final = T::zero();
+
+    for (size_t i = 0; i < chunks; ++i)
+    {
+        final = final + partial[i];
+    }
+
+    return final;
+}
+
 
 template <typename ppT>
 r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_proving_key<ppT> &pk,
@@ -493,7 +535,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
     libff::G1<ppT> A = r * pk.G_gamma_Z +
         pk.A_query[0] + // i = 0 is a special case because input_i = 1
         sap_wit.d1 * pk.G_gamma_Z + // ZK-patch
-        libff::multi_exp<libff::G1<ppT>,
+        multi_exp_warpper<libff::G1<ppT>,
                          libff::Fr<ppT>,
                          libff::multi_exp_method_BDLO12>(
             pk.A_query.begin() + 1,
@@ -511,7 +553,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
     libff::G2<ppT> B = r * pk.H_gamma_Z +
         pk.B_query[0] + // i = 0 is a special case because input_i = 1
         sap_wit.d1 * pk.H_gamma_Z + // ZK-patch
-        libff::multi_exp<libff::G2<ppT>,
+        multi_exp_warpper<libff::G2<ppT>,
                          libff::Fr<ppT>,
                          libff::multi_exp_method_BDLO12>(
             pk.B_query.begin() + 1,
@@ -533,7 +575,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
      * and G^{2 * r * gamma^2 * Z(t) * \sum_{i=0}^m input_i A_i(t)} =
      *              = \prod_{i=0}^m C_query_2 * input_i
      */
-    libff::G1<ppT> C = libff::multi_exp<libff::G1<ppT>,
+    libff::G1<ppT> C = multi_exp_warpper<libff::G1<ppT>,
                                         libff::Fr<ppT>,
                                         libff::multi_exp_method_BDLO12>(
             pk.C_query_1.begin(),
@@ -546,7 +588,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
         sap_wit.d1 * pk.G_ab_gamma_Z + // ZK-patch
         r * pk.C_query_2[0] + // i = 0 is a special case for C_query_2
         (r + r) * sap_wit.d1 * pk.G_gamma2_Z2 + // ZK-patch for C_query_2
-        r * libff::multi_exp<libff::G1<ppT>,
+        r * multi_exp_warpper<libff::G1<ppT>,
                              libff::Fr<ppT>,
                              libff::multi_exp_method_BDLO12>(
             pk.C_query_2.begin() + 1,
@@ -555,7 +597,7 @@ r1cs_se_ppzksnark_proof<ppT> r1cs_se_ppzksnark_prover(const r1cs_se_ppzksnark_pr
             sap_wit.coefficients_for_ACs.end(),
             std::min((size_t)(pk.C_query_2.end() - (pk.C_query_2.begin() + 1)), chunks)) +
         sap_wit.d2 * pk.G_gamma2_Z_t[0] + // ZK-patch
-        libff::multi_exp<libff::G1<ppT>,
+        multi_exp_warpper<libff::G1<ppT>,
                           libff::Fr<ppT>,
                           libff::multi_exp_method_BDLO12>(
             pk.G_gamma2_Z_t.begin(),
