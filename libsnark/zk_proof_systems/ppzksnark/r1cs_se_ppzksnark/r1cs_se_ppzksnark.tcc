@@ -228,32 +228,16 @@ r1cs_se_ppzksnark_verification_key<ppT> r1cs_se_ppzksnark_verification_key<ppT>:
 template<typename T, typename FieldT>
 std::vector<T> batch_exp_warpper(const size_t scalar_size,
                          const size_t window,
-                         const window_table<T> &table,
+                         const libff::window_table<T> &table,
                          const std::vector<FieldT> &v)
 {
-    if (!inhibit_profiling_info)
-    {
-        print_indent();
-    }
     std::vector<T> res(v.size(), table[0][0]);
 
 #pragma omp parallel for
     for (size_t i = 0; i < v.size(); ++i)
     {
-        res[i] = windowed_exp(scalar_size, window, table, v[i]);
-
-        if (!inhibit_profiling_info && (i % 10000 == 0))
-        {
-            printf(".");
-            fflush(stdout);
-        }
+        res[i] = libff::windowed_exp(scalar_size, window, table, v[i]);
     }
-
-    if (!inhibit_profiling_info)
-    {
-        printf(" DONE!\n");
-    }
-
     return res;
 }
 
