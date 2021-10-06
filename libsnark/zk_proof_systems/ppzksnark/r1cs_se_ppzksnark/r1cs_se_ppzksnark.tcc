@@ -450,7 +450,7 @@ r1cs_se_ppzksnark_keypair<ppT> r1cs_se_ppzksnark_generator(const r1cs_se_ppzksna
 
     pk.print_size();
     vk.print_size();
-
+    printf("Setup end\n");
     return r1cs_se_ppzksnark_keypair<ppT>(std::move(pk), std::move(vk));
 }
     
